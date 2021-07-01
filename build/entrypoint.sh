@@ -45,7 +45,7 @@ populateEnvironment() {
   VERSION=$([ "${GITHUB_EVENT_NAME}" = "release" ] && echo "${GITHUB_REF##*/}" || echo "latest")
   echo "VERSION=$VERSION"
   # shellcheck disable=SC2205
-  ACTION=$( ( ( "${GITHUB_EVENT_NAME}" == 'push' && "${GITHUB_REF}" == 'refs/heads/develop' ) || "${GITHUB_EVENT_NAME}" == 'release' ) && echo "--push" || echo "--load")
+  ACTION=$( ( ( "${GITHUB_EVENT_NAME}" == "push" && "${GITHUB_REF}" == 'refs/heads/develop' ) || "${GITHUB_EVENT_NAME}" == 'release' ) && echo "--push" || echo "--load")
   echo "ACTION=$ACTION"
   IMAGE="$ARTIFACTORY/${GITHUB_REPOSITORY##*/}:$VERSION"
   echo "IMAGE=$IMAGE"

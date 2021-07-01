@@ -1,6 +1,6 @@
 FROM docker:20.10-dind
 
-ENV DOCKER_BUILDKIT=1
+ENV DOCKER_BUILDKIT=0
 ENV DOCKER_CLI_EXPERIMENTAL=1
 
 ARG BUILDX_URL=https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64
