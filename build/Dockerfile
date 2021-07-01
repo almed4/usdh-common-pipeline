@@ -8,7 +8,7 @@ ENV SECRETS ${SECRETS}
 ARG BUILDX_URL=https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64
 
 RUN mkdir -p $HOME/.docker/cli-plugins && \
-    wget -O -nv $HOME/.docker/cli-plugins/docker-buildx $BUILDX_URL && \
+    wget -O $HOME/.docker/cli-plugins/docker-buildx $BUILDX_URL && \
     chmod a+x $HOME/.docker/cli-plugins/docker-buildx
 
 COPY entrypoint.sh /entrypoint.sh
