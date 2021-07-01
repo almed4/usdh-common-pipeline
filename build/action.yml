@@ -12,10 +12,9 @@ runs:
   using: 'composite'
   steps:
     - run: |
-        echo $ARTIFACTORY
-        echo ${{ env.ARTIFACTORY }}
-#        docker build -t docker-build ${{ github.action_path }}
-#        docker run -v /var/run/docker.sock:/var/run/docker.sock docker-build
+        docker build -t docker-build ${{ github.action_path }}
+        docker run -v /var/run/docker.sock:/var/run/docker.sock \
+        -e ARTIFACTORY -e SECRETS docker-build
       shell: bash
       env:
         ARTIFACTORY: ${{ inputs.artifactory }}
