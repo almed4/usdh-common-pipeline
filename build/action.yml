@@ -14,7 +14,9 @@ runs:
     - run: |
         docker build -t docker-build ${{ github.action_path }}
         docker run -v /var/run/docker.sock:/var/run/docker.sock \
-        -e ARTIFACTORY -e SECRETS docker-build
+        -e ARTIFACTORY -e SECRETS -e GITHUB_EVENT_NAME -e GITHUB_REF \
+        -e GITHUB_REPOSITORY -e GITHUB_ACTOR -e GITHUB_TOKEN \
+        docker-build
       shell: bash
       env:
         ARTIFACTORY: ${{ inputs.artifactory }}
