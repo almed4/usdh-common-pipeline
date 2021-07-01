@@ -21,10 +21,7 @@ runs:
     - name: Configure Cache
       id: cache-config
       run: |
-        echo -e "\n\nTEST\n\n"
-        pwd
-        ls -a "${{ inputs.cache }}"
-        echo -e "\n\nTEST\n\n"
+        mkdir -p "${{ inputs.cache }}"
         COMMAND=$( [ -z "${{ inputs.cache }}" ] && echo "" || echo \
         "--cache-from=type=local,src=${{ inputs.cache }} --cache-to=type=local,dest=${{ inputs.cache }},mode=max" )
         MOUNT=$( [ -z "${{ inputs.cache }}" ] && echo "" || echo \
