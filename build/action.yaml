@@ -3,7 +3,7 @@ description: 'Build docker image and push to artifactory in case of push or rele
 inputs:
   artifactory:
     description: 'Location to push the image to in Artifactory'
-    required: true
+    required: false
     default: artifactory.build.ingka.ikea.com/ushub-docker-dev-local
   secrets:
     description: 'Pipeline secrets (Artifactory username/password and GitHub username/token)'
