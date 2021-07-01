@@ -42,14 +42,14 @@ populateEnvironment() {
   printf "\n\nPopulating environment."
   printLargeDelimiter
 
-  VERSION=$([ "${GITHUB_EVENT_NAME}" = "release" ] && echo "${GITHUB_REF##*/}" || echo "latest")
+  VERSION=$([ "$GITHUB_EVENT_NAME" = "release" ] && echo "${GITHUB_REF##*/}" || echo "latest")
   echo "VERSION=$VERSION"
   # shellcheck disable=SC2205
-  ACTION=$( ( ( "${GITHUB_EVENT_NAME}" == "push" && "${GITHUB_REF}" == 'refs/heads/develop' ) || "${GITHUB_EVENT_NAME}" == 'release' ) && echo "--push" || echo "--load")
+  ACTION=$( ( ( "$GITHUB_EVENT_NAME" == "push" && "$GITHUB_REF" == 'refs/heads/develop' ) || "$GITHUB_EVENT_NAME" == 'release' ) && echo "--push" || echo "--load")
   echo "ACTION=$ACTION"
   IMAGE="$ARTIFACTORY/${GITHUB_REPOSITORY##*/}:$VERSION"
   echo "IMAGE=$IMAGE"
-  GIT_PATH="https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git#${GITHUB_REF#*/}"
+  GIT_PATH="https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git#${GITHUB_REF#*/}"
   echo "GIT_PATH=$GIT_PATH"
 
   echo "Environment populated!"
@@ -104,7 +104,16 @@ buildOrPush() {
   return 0
 }
 
-validateEnvironment
-populateEnvironment
-prepDocker
-buildOrPush
+echo "GITHUB_REF: $GITHUB_REF"
+echo "GIT_PATH: $GIT_PATH"
+echo "GITHUB_ACTOR: $GITHUB_ACTOR"
+echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
+echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"
+echo "GITHUB_TOKEN: $GITHUB_TOKEN"
+echo "GITHUB_REF##*/: ${GITHUB_REF##*/}"
+echo "GITHUB_REF#*/: ${GITHUB_REF#*/}"
+echo "{GITHUB_REPOSITORY##*/}: ${GITHUB_REPOSITORY##*/}"
+#validateEnvironment
+#populateEnvironment
+#prepDocker
+#buildOrPush
