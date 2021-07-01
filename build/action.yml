@@ -40,6 +40,7 @@ runs:
         docker-build
       shell: bash
       env:
+        DOCKER_BUILDKIT: "1"
         ARTIFACTORY: ${{ inputs.artifactory }}
         SECRETS: ${{ inputs.secrets }}
         GITHUB_TOKEN: ${{ github.token }}
