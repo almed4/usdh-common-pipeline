@@ -1,12 +1,10 @@
-#!/bin/sh -l
 set -e
-docker="/usr/local/bin/docker"
 
-printLargeDelimeter() {
+printLargeDelimiter() {
   printf "\n------------------------------------------------------------------------------------------\n\n"
 }
 
-printStepExecutionDelimeter() {
+printStepExecutionDelimiter() {
   printf "\n----------------------------------------\n"
 }
 
@@ -24,7 +22,7 @@ validateProperty() {
 
 validateEnvironment() {
   printf "\n\nValidating Secrets."
-  printLargeDelimeter
+  printLargeDelimiter
 
   echo "Validating IKEA_ARTIFACTORY_USER_NAME"
   if ! validateProperty "IKEA_ARTIFACTORY_USER_NAME"; then
@@ -41,16 +39,16 @@ validateEnvironment() {
 
 populateEnvironment() {
   printf "\n\nPopulating environment."
-  printLargeDelimeter
+  printLargeDelimiter
 
-  VERSION=$([ "${GITHUB_EVENT_NAME}" == "release" ] && echo "${GITHUB_REF##*/}" || echo "latest")
+  VERSION=$([ "${GITHUB_EVENT_NAME}" = "release" ] && echo "${GITHUB_REF##*/}" || echo "latest")
   echo "VERSION=$VERSION"
-  ACTION=$( ( ( "${GITHUB_EVENT_NAME}" == 'push' && "${GITHUB_REF}" == 'refs/heads/develop' ) || "${GITHUB_EVENT_NAME}" == 'release' ) && echo "--push" || echo "--load")
+  ACTION=$( ( [[ "${GITHUB_EVENT_NAME}" == 'push' && "${GITHUB_REF}" == 'refs/heads/develop' ]] || "${GITHUB_EVENT_NAME}" == 'release' ) && echo "--push" || echo "--load")
   echo "ACTION=$ACTION"
-  IMAGE="artifactory.build.ingka.ikea.com/ushub-docker-dev-local/${GITHUB_REPOSITORY##*/}:$VERSION"
+  IMAGE="$ARTIFACTORY/${GITHUB_REPOSITORY##*/}:$VERSION"
   echo "IMAGE=$IMAGE"
-  PATH="https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git#${GITHUB_REF#*/}"
-  echo "PATH=$PATH"
+  GIT_PATH="https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git#${GITHUB_REF#*/}"
+  echo "GIT_PATH=$GIT_PATH"
 
   echo "Environment populated!"
   return 0
@@ -58,19 +56,26 @@ populateEnvironment() {
 
 prepDocker() {
   printf "\n\nPreparing Docker."
-  printLargeDelimeter
+  printLargeDelimiter
 
-  echo "Creating buildx"
-  $docker buildx create --use \
+  echo "Installing buildx."
+  BUILDX_URL="https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64"
+  mkdir -p "$HOME/.docker/cli-plugins" && \
+  wget -O "$HOME/.docker/cli-plugins/docker-buildx" "$BUILDX_URL" && \
+  chmod a+x "$HOME/.docker/cli-plugins/docker-buildx"
+  echo "buildx installed!"
+
+  echo "Creating buildx."
+  docker buildx create --use \
   --driver docker-container \
   --buildkitd-flags '--allow-insecure-entitlement security.insecure --allow-insecure-entitlement network.host'
   echo "buildx created!"
 
-  printStepExecutionDelimeter
+  printStepExecutionDelimiter
 
-  echo "Logging into docker"
+  echo "Logging into docker."
   echo "$IKEA_ARTIFACTORY_PASSWORD" |
-  $docker login artifactory.build.ingka.ikea.com \
+  docker login artifactory.build.ingka.ikea.com \
   --username "$IKEA_ARTIFACTORY_USER_NAME" \
   --password-stdin
   echo "Logged into docker!"
@@ -84,10 +89,10 @@ buildOrPush() {
   else
     printf "\n\nBuilding docker image."
   fi
-  printLargeDelimeter
+  printLargeDelimiter
 
-  $docker buildx build \
-  "$PATH" \
+  docker buildx build \
+  "$GIT_PATH" \
   "$ACTION" \
   --platform linux/amd64 \
   --tag "$IMAGE" \

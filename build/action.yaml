@@ -1,0 +1,20 @@
+name: 'Docker Build or Push'
+description: 'Build docker image and push to artifactory in case of push or release.'
+inputs:
+  artifactory:
+    description: 'Location to push the image to in Artifactory'
+    required: true
+    default: artifactory.build.ingka.ikea.com/ushub-docker-dev-local
+  secrets:
+    description: 'Pipeline secrets (Artifactory username/password and GitHub username/token)'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - run: ${{ github.action_path }}/script.sh
+      shell: bash
+      env:
+        DOCKER_BUILDKIT: "1"
+        DOCKER_CLI_EXPERIMENTAL: "1"
+        ARTIFACTORY: ${{ inputs.artifactory }}
+        SECRETS: ${{ inputs.secrets }}

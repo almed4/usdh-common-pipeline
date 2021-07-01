@@ -1,16 +1,14 @@
 #!/bin/sh -l
+set -e
 
-printDelimeter() {
-  echo "----------------------------------------------------------------------"
+printLargeDelimiter() {
+  printf "\n------------------------------------------------------------------------------------------\n\n"
 }
 
-printLargeDelimeter() {
-  printf "\n\n------------------------------------------------------------------------------------------\n\n"
+printStepExecutionDelimiter() {
+  printf "\n----------------------------------------\n"
 }
 
-printStepExecutionDelimeter() {
-  echo "----------------------------------------"
-}
 
 validateProperty() {
   PROP_KEY=$1
@@ -24,9 +22,9 @@ validateProperty() {
 }
 
 validateEnvironment() {
-  printLargeDelimeter
+  printLargeDelimiter
   echo "Validating Secrets"
-  printDelimeter
+  printDelimiter
   echo "Validating GITHUB_USER"
   if ! validateProperty "GITHUB_USER"; then
     return 1
@@ -43,13 +41,13 @@ validateEnvironment() {
   if ! validateProperty "IKEA_ARTIFACTORY_PASSWORD"; then
     return 1
   fi
-  printStepExecutionDelimeter
+  printStepExecutionDelimiter
   echo "Secrets validated!"
   return 0
 }
 
 populateEnvironment() {
-  printLargeDelimeter
+  printLargeDelimiter
   echo "Populating environment."
   VERSION=$([ "${GITHUB_EVENT_NAME}" == "release" ] && echo "${GITHUB_REF##*/}" || echo "latest")
   ACTION=$([[ ( "${GITHUB_EVENT_NAME}" == 'push' && "${GITHUB_REF}" == 'refs/heads/develop' ) || "${GITHUB_EVENT_NAME}" == 'release' ]] && echo "--push" || echo "--load")
