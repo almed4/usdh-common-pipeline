@@ -32,6 +32,8 @@ runs:
       shell: bash
     - name: Docker build or Push
       run: |
+        echo "COMMAND: $COMMAND"
+        echo "MOUNT: ${{ steps.cache-config.outputs.mount }}"
         docker build -t docker-build "${{ github.action_path }}"
         docker run -v /var/run/docker.sock:/var/run/docker.sock \
         "${{ steps.cache-config.outputs.mount }}" \
