@@ -103,6 +103,7 @@ buildOrPush() {
   return 0
 }
 
+echo "$COMMAND"
 validateEnvironment
 populateEnvironment
 prepDocker
