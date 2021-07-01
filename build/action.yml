@@ -32,6 +32,7 @@ runs:
     - name: Docker build or Push
       run: |
         export DOCKER_BUILDKIT=1
+        export COMPOSE_DOCKER_CLI_BUILD=1
         docker build -t docker-build "${{ github.action_path }}"
         docker run -v /var/run/docker.sock:/var/run/docker.sock \
         "${{ steps.cache-config.outputs.mount }}" \
