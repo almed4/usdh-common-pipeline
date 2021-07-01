@@ -107,4 +107,4 @@ buildOrPush() {
 validateEnvironment
 populateEnvironment
 prepDocker
-buildOrPushsh
+buildOrPush
