@@ -21,7 +21,6 @@ runs:
     - name: Configure Cache
       id: cache-config
       run: |
-        mkdir -p "${{ inputs.cache }}"
         echo "a"
         ls -a /tmp
         echo "a"
