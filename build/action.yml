@@ -21,11 +21,11 @@ runs:
     - name: Configure Cache
       id: cache-config
       run: |
-        COMMAND=$( [ -z "${{ inputs.cache }}" ] && "" || \
+        COMMAND=$( [ -z "${{ inputs.cache }}" ] && echo "" || echo \
         "--cache-from=type=local,src=${{ inputs.cache }}
-        --cache-to=type=local,dest=${{ inputs.cache }},mode=max")
-        MOUNT=$( [ -z "${{ inputs.cache }}" ] && "" || \
-        "-v ${{ inputs.cache }}:${{ inputs.cache }}")
+        --cache-to=type=local,dest=${{ inputs.cache }},mode=max" )
+        MOUNT=$( [ -z "${{ inputs.cache }}" ] && echo "" || echo \
+        "-v ${{ inputs.cache }}:${{ inputs.cache }}" )
 
         echo "::set-output name=command::$COMMAND"
         echo "::set-output name=mount::$MOUNT"
