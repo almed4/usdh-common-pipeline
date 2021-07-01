@@ -105,7 +105,6 @@ buildOrPush() {
 }
 
 echo "GITHUB_REF: $GITHUB_REF"
-echo "GIT_PATH: $GIT_PATH"
 echo "GITHUB_ACTOR: $GITHUB_ACTOR"
 echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
 echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"
@@ -113,7 +112,7 @@ echo "GITHUB_TOKEN: $GITHUB_TOKEN"
 echo "GITHUB_REF##*/: ${GITHUB_REF##*/}"
 echo "GITHUB_REF#*/: ${GITHUB_REF#*/}"
 echo "{GITHUB_REPOSITORY##*/}: ${GITHUB_REPOSITORY##*/}"
-#validateEnvironment
-#populateEnvironment
-#prepDocker
-#buildOrPush
+validateEnvironment
+populateEnvironment
+prepDocker
+buildOrPush

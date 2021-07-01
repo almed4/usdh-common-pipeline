@@ -21,3 +21,4 @@ runs:
       env:
         ARTIFACTORY: ${{ inputs.artifactory }}
         SECRETS: ${{ inputs.secrets }}
+        GITHUB_TOKEN: ${{ github.token }}
