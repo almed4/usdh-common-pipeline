@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:experimental
 FROM docker:20.10
 
 ENV DOCKER_BUILDKIT=1

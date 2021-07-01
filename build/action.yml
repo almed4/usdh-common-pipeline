@@ -31,6 +31,7 @@ runs:
       shell: bash
     - name: Docker build or Push
       run: |
+        export DOCKER_BUILDKIT=1
         docker build -t docker-build "${{ github.action_path }}"
         docker run -v /var/run/docker.sock:/var/run/docker.sock \
         "${{ steps.cache-config.outputs.mount }}" \
@@ -40,7 +41,6 @@ runs:
         docker-build
       shell: bash
       env:
-        DOCKER_BUILDKIT: "1"
         ARTIFACTORY: ${{ inputs.artifactory }}
         SECRETS: ${{ inputs.secrets }}
         GITHUB_TOKEN: ${{ github.token }}
