@@ -34,16 +34,17 @@ runs:
       run: |
         docker build -t docker-build "${{ github.action_path }}"
         docker run -v /var/run/docker.sock:/var/run/docker.sock \
+        "${{ steps.cache-config.outputs.mount }}" \
         -e ARTIFACTORY -e SECRETS -e GITHUB_EVENT_NAME -e GITHUB_REF \
         -e GITHUB_REPOSITORY -e GITHUB_ACTOR -e GITHUB_TOKEN \
-        "${{ steps.cache-config.outputs.mount }}" \
-        -e COMMAND="${{ steps.cache-config.outputs.command }}" \
+        -e COMMAND \
         docker-build
       shell: bash
       env:
         ARTIFACTORY: ${{ inputs.artifactory }}
         SECRETS: ${{ inputs.secrets }}
         GITHUB_TOKEN: ${{ github.token }}
+        COMMAND: ${{ steps.cache-config.outputs.command }}
     - name: Sent Environment
       id: set-env
       run: echo "a"
