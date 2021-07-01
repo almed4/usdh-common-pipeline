@@ -22,8 +22,7 @@ runs:
       id: cache-config
       run: |
         COMMAND=$( [ -z "${{ inputs.cache }}" ] && echo "" || echo \
-        "--cache-from=type=local,src=${{ inputs.cache }}
-        --cache-to=type=local,dest=${{ inputs.cache }},mode=max" )
+        "--cache-from=type=local,src=${{ inputs.cache }} --cache-to=type=local,dest=${{ inputs.cache }},mode=max" )
         MOUNT=$( [ -z "${{ inputs.cache }}" ] && echo "" || echo \
         "-v ${{ inputs.cache }}:${{ inputs.cache }}" )
 
@@ -32,8 +31,6 @@ runs:
       shell: bash
     - name: Docker build or Push
       run: |
-        echo "COMMAND: $COMMAND"
-        echo "MOUNT: ${{ steps.cache-config.outputs.mount }}"
         docker build -t docker-build "${{ github.action_path }}"
         docker run -v /var/run/docker.sock:/var/run/docker.sock \
         "${{ steps.cache-config.outputs.mount }}" \
