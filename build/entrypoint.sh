@@ -1,3 +1,4 @@
+#!/bin/sh -l
 set -e
 
 printLargeDelimiter() {
@@ -43,7 +44,8 @@ populateEnvironment() {
 
   VERSION=$([ "${GITHUB_EVENT_NAME}" = "release" ] && echo "${GITHUB_REF##*/}" || echo "latest")
   echo "VERSION=$VERSION"
-  ACTION=$( ( [[ "${GITHUB_EVENT_NAME}" == 'push' && "${GITHUB_REF}" == 'refs/heads/develop' ]] || "${GITHUB_EVENT_NAME}" == 'release' ) && echo "--push" || echo "--load")
+  # shellcheck disable=SC2205
+  ACTION=$( ( ( "${GITHUB_EVENT_NAME}" == 'push' && "${GITHUB_REF}" == 'refs/heads/develop' ) || "${GITHUB_EVENT_NAME}" == 'release' ) && echo "--push" || echo "--load")
   echo "ACTION=$ACTION"
   IMAGE="$ARTIFACTORY/${GITHUB_REPOSITORY##*/}:$VERSION"
   echo "IMAGE=$IMAGE"
@@ -57,13 +59,6 @@ populateEnvironment() {
 prepDocker() {
   printf "\n\nPreparing Docker."
   printLargeDelimiter
-
-  echo "Installing buildx."
-  BUILDX_URL="https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64"
-  mkdir -p "$HOME/.docker/cli-plugins" && \
-  wget -O "$HOME/.docker/cli-plugins/docker-buildx" "$BUILDX_URL" && \
-  chmod a+x "$HOME/.docker/cli-plugins/docker-buildx"
-  echo "buildx installed!"
 
   echo "Creating buildx."
   docker buildx create --use \

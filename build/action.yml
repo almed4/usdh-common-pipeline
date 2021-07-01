@@ -11,7 +11,7 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - run: ${{ github.action_path }}/script.sh
+    - run: docker run -v /var/run/docker.sock:/var/run/docker.sock Dockerfile
       shell: bash
       env:
         DOCKER_BUILDKIT: "1"
