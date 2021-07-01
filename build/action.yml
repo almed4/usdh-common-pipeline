@@ -1,4 +1,4 @@
-name: 'Docker Build or Push v1'
+name: 'Docker Build or Push'
 description: 'Build docker image and push to artifactory in case of push or release.'
 inputs:
   artifactory:
