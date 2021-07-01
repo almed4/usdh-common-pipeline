@@ -23,8 +23,7 @@ runs:
       run: |
         echo -e "\n\nTEST\n\n"
         pwd
-        ls /
-        ls "${{ inputs.cache }}"
+        ls -a "${{ inputs.cache }}"
         echo -e "\n\nTEST\n\n"
         COMMAND=$( [ -z "${{ inputs.cache }}" ] && echo "" || echo \
         "--cache-from=type=local,src=${{ inputs.cache }} --cache-to=type=local,dest=${{ inputs.cache }},mode=max" )
