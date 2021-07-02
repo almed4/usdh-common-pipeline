@@ -1,5 +1,5 @@
 name: 'Docker Build or Push'
-description: 'Build docker image and push to artifactory in case of push or release.'
+description: 'Build docker image and push to Artifactory in case of push or release.'
 inputs:
   artifactory:
     description: 'Location to push the image to in Artifactory'
@@ -31,7 +31,6 @@ runs:
       shell: bash
     - name: Docker build or Push
       run: |
-        echo "${{ steps.cache-config.outputs.mount }}"
         docker build -t docker-build "${{ github.action_path }}"
         docker run -v /var/run/docker.sock:/var/run/docker.sock \
         "${{ steps.cache-config.outputs.mount }}" \

@@ -1,0 +1,15 @@
+name: 'Helmfile Deploy'
+description: 'Sync Helmfile to Kubernetes cluster.'
+inputs:
+  secrets:
+    description: 'Pipeline secrets (Artifactory username/password and GitHub username/token)'
+    required: true
+  kubeconfig:
+    description: 'KUBECONFIG for cluster to deploy to'
+    required: true
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  env:
+    SECRETS: ${{ inputs.secrets }}
+    KUBECONFIG: ${{ inputs.kubeconfig }}
