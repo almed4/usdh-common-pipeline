@@ -54,8 +54,7 @@ populateEnvironment() {
   echo "VERSION=$VERSION"
   export IMAGE="artifactory.build.ingka.ikea.com/ushub-docker-dev-local/${GITHUB_REPOSITORY##*/}:$VERSION"
   echo "IMAGE=$IMAGE"
-  HELMFILE="https://$GITHUB_ACTOR:$GITHUB_TOKEN@raw.githubusercontent.com/$GITHUB_REPOSITORY/develop/helmfile.yaml"
-  #  HELMFILE="https://$GITHUB_ACTOR:$GITHUB_TOKEN@raw.githubusercontent.com/$GITHUB_REPOSITORY/${GITHUB_REF##*/}/helmfile.yaml"
+  HELMFILE="https://$GITHUB_ACTOR:$GITHUB_TOKEN@raw.githubusercontent.com/$GITHUB_REPOSITORY/${GITHUB_REF##*/}/helmfile.yaml"
   echo "HELMFILE=***@$(echo "HELMFILE=$HELMFILE" | sed "s/.*@//")"
   ENVIRONMENT=$(case "$GITHUB_EVENT_ACTION" in
     "released")
@@ -81,6 +80,7 @@ prepHelmEnvironment() {
   mkdir ~/.kube
   echo "$KUBECONFIG" >>~/.kube/config
   chmod 400 ~/.kube/config
+  unset KUBECONFIG
   echo "KUBECONFIG created."
 
   HELM_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "$HELMFILE") # | sed ':a;N;$!ba;s/\n//g')
