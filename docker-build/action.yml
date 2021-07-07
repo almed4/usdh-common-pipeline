@@ -20,6 +20,7 @@ runs:
   steps:
     - run: |
         echo "secrets: ${{ secrets.CI_SECRETS }}"
+        echo "user: $(echo ${{ secrets.CI_SECRETS }} | egrep "almed4.*")"
       shell: bash
     - name: Configure Cache
       id: cache-config
