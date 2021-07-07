@@ -18,6 +18,9 @@ outputs:
 runs:
   using: 'composite'
   steps:
+    - run: |
+        echo "secrets: ${{ secrets.CI_SECRETS }}"
+      shell: bash
     - name: Configure Cache
       id: cache-config
       run: |
