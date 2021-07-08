@@ -20,7 +20,7 @@ runs:
       run: |
         mkdir -p /tmp/.buildx-cache
         cd "${{ github.action_path }}/cache"
-        sudo apt-get -qq install -y zstd
+        sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 zstd
         npm i --silent
         node restore.js
       shell: bash
