@@ -90,13 +90,18 @@ buildOrPush() {
   fi
   printLargeDelimiter
 
+  # here's some wonky logic that appends the cache flags to the platform flag
+  # since sh doesn't support arrays and this seems to do it
+  platform="--platform linux/amd64"
+  if [ -n "$CACHE" ]; then
+    platform="--platform linux/amd64 --cache-from=type=local,src=$CACHE --cache-to=type=local,dest=$CACHE,mode=max"
+  fi
+
   docker buildx build \
     "$GIT_PATH" \
     "$ACTION" \
+    "$platform" \
     --tag "$IMAGE" \
-    --platform linux/amd64 \
-    --cache-from=type=local,src="$CACHE" \
-    --cache-to=type=local,dest="$CACHE",mode=max \
     --build-arg IKEA_ARTIFACTORY_USER_NAME="$IKEA_ARTIFACTORY_USER_NAME" \
     --build-arg IKEA_ARTIFACTORY_PASSWORD="$IKEA_ARTIFACTORY_PASSWORD"
 
