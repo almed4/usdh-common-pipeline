@@ -20,6 +20,8 @@ async function run() {
 
             core.info(`Cache restore from key: ${KEY}`)
         } catch (error) {
+            core.info('failed in new block')
+            core.setFailed(error.message);
             if (error.name === cache.ValidationError.name) {
                 throw error;
             } else {
