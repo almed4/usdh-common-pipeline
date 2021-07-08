@@ -16,7 +16,7 @@ runs:
   using: 'composite'
   steps:
     - name: Load Cache
-      id: cache-load
+      id: cache-restore
       run: |
         npm i @actions/cache
         npm i @actions/core
@@ -36,7 +36,7 @@ runs:
         SECRETS: ${{ inputs.secrets }}
         GITHUB_TOKEN: ${{ github.token }}
     - name: Load Cache
-      id: cache-load
+      id: cache-save
       run: |
         node "${{ github.action_path }}/cache/save.js"
       shell: bash
