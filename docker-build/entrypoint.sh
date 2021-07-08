@@ -90,7 +90,7 @@ buildOrPush() {
   fi
   printLargeDelimiter
 
-  if [ -n "$CACHE" ]; then
+  if [ -z "$CACHE" ]; then
     CACHE="."
   fi
 
