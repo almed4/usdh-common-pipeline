@@ -113,7 +113,9 @@ buildOrPush() {
   return 0
 }
 
-validateEnvironment
-populateEnvironment
-prepDocker
-buildOrPush
+#validateEnvironment
+#populateEnvironment
+#prepDocker
+#buildOrPush
+date >> "$CACHE/test.txt"
+cat "$CACHE/test.txt"
