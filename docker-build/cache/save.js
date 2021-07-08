@@ -13,6 +13,7 @@ async function run() {
             core.info(`Cache hit occurred on the primary key ${KEY}, not saving cache.`);
             return;
         }
+        core.info(`No cache hit occurred on the primary key ${KEY}, saving cache...`);
 
         try {
             await cache.saveCache(['/tmp/.buildx-cache'], KEY)

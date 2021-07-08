@@ -7,13 +7,14 @@ async function run() {
     try {
         try {
             core.info('Restoring Cache\n------------------------------------------------------------------------------------------\n');
-            core.info(`cache: ${KEY}`)
 
             const cacheKey = await cache.restoreCache(['/tmp/.buildx-cache'], KEY);
+
             if (!cacheKey) {
                 core.info(`Cache not found for key: ${KEY}. Can't restore.`)
                 return;
             }
+            core.info(`Cache found for key: ${KEY}. Restoring...`)
 
             core.saveState('CACHE_RESULT', cacheKey);
 
