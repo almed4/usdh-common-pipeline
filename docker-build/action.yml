@@ -20,9 +20,8 @@ runs:
       run: |
         mkdir -p /tmp/.buildx-cache
         cd "${{ github.action_path }}/cache"
-        sudo apt-get install -y -q zstd
-        npm i --silent @actions/cache
-        npm i --silent @actions/core
+        sudo apt-get -qq install -y zstd
+        npm i --silent
         node restore.js
       shell: bash
     - name: Docker build or Push

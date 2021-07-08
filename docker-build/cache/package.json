@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "@actions/cache": "^1.0.7",
+    "@actions/core": "^1.4.0",
+    "@actions/exec": "^1.1.0",
+    "@actions/glob": "^0.1.2",
+    "@actions/io": "^1.1.1",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
+    "semver": "^6.3.0",
+    "util": "^0.12.4",
+    "uuid": "^3.4.0"
+  }
+}
