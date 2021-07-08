@@ -1,14 +1,17 @@
 const cache = require("@actions/cache");
 const core = require("@actions/core");
 
-const KEY = process.env.GITHUB_REPOSITORY;
+// const KEY = process.env.GITHUB_REPOSITORY;
+const KEY = "bigolteststring";
 
 async function run() {
     try {
         try {
             core.info('Restoring Cache\n------------------------------------------------------------------------------------------\n');
 
+            console.info(`get cacheKey.`)
             const cacheKey = await cache.restoreCache(['/tmp/.buildx-cache'], KEY);
+            console.info(`cacheKey: ${cacheKey}.`)
 
             if (!cacheKey) {
                 core.info(`Cache not found for key: ${KEY}. Can't restore.`)
