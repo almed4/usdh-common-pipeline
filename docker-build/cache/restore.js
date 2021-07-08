@@ -7,7 +7,7 @@ async function run() {
     try {
         try {
             core.info('Restoring Cache\n------------------------------------------------------------------------------------------\n');
-            core.info('cache: KEY')
+            core.info(`cache: ${KEY}`)
 
             const cacheKey = await cache.restoreCache(['/tmp/.buildx-cache'], KEY);
             if (!cacheKey) {
