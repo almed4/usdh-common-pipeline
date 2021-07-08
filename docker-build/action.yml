@@ -8,9 +8,6 @@ inputs:
   secrets:
     description: 'Pipeline secrets (Artifactory username/password and GitHub username/token)'
     required: true
-  cache:
-    description: 'Path to GitHub Actions cache to speed up builds.'
-    required: false
 outputs:
   environment:
     description: 'Name of which environment(s) to deploy to.'
