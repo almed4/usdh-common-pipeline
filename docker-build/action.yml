@@ -18,26 +18,23 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Configure Cache
-      id: cache-config
+    - name: Load Cache
+      id: cache-load
       run: |
-        COMMAND=$( [ -z "${{ inputs.cache }}" ] && echo "" || echo \
-        "--cache-from=type=local,src=${{ inputs.cache }} --cache-to=type=local,dest=${{ inputs.cache }},mode=max" )
-        MOUNT=$( [ -z "${{ inputs.cache }}" ] && echo "" || echo \
-        "--volume=${{ inputs.cache }}:${{ inputs.cache }}" )
-
-        echo "::set-output name=command::$COMMAND"
-        echo "::set-output name=mount::$MOUNT"
+        mkdir /tmp/.buildx-cache
+        echo "test" >> /tmp/.buildx-cache/test.txt
       shell: bash
     - name: Docker build or Push
       run: |
-        docker build -t docker-build "${{ github.action_path }}"
-        docker run -v /var/run/docker.sock:/var/run/docker.sock \
-        "${{ steps.cache-config.outputs.mount }}" \
-        -e ARTIFACTORY -e SECRETS -e GITHUB_EVENT_NAME -e GITHUB_REF \
-        -e GITHUB_REPOSITORY -e GITHUB_ACTOR -e GITHUB_TOKEN \
-        -e COMMAND \
-        docker-build
+        ls /tmp/.buildx-cache
+        cat /tmp/.buildx-cache/test.txt
+#        docker build -t docker-build "${{ github.action_path }}"
+#        docker run -v /var/run/docker.sock:/var/run/docker.sock \
+#        "-v /tmp/.buildx-cache:/tmp/.buildx-cache \
+#        -e ARTIFACTORY -e SECRETS -e GITHUB_EVENT_NAME -e GITHUB_REF \
+#        -e GITHUB_REPOSITORY -e GITHUB_ACTOR -e GITHUB_TOKEN \
+#        -e COMMAND \
+#        docker-build
       shell: bash
       env:
         ARTIFACTORY: ${{ inputs.artifactory }}

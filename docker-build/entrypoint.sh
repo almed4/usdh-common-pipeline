@@ -91,7 +91,7 @@ buildOrPush() {
   "$ACTION" \
   --platform linux/amd64 \
   --tag "$IMAGE" \
-  "$COMMAND" \
+  --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max \
   --build-arg IKEA_ARTIFACTORY_USER_NAME="$IKEA_ARTIFACTORY_USER_NAME" \
   --build-arg IKEA_ARTIFACTORY_PASSWORD="$IKEA_ARTIFACTORY_PASSWORD"
   if [ "$ACTION" = "--push" ]; then

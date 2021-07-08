@@ -68,6 +68,7 @@ populateEnvironment() {
       ;;
     esac)
   echo "ENVIRONMENT=$ENVIRONMENT"
+  export ENVIRONMENT
 
   echo "Environment populated!"
   return 0
