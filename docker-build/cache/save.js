@@ -5,7 +5,7 @@ const KEY = process.env.GITHUB_REPOSITORY;
 
 async function run() {
     try {
-        core.info('Saving cache...\n');
+        core.info('\nSaving Cache\n------------------------------------------------------------------------------------------\n\n');
 
         const state = core.getState('CACHE_RESULT')
 
