@@ -22,8 +22,6 @@ runs:
       run: |
         [[ -n "${{ inputs.cache }}" ]] && mkdir -p "${{ inputs.cache }}"
         mnt=$([[ -n "${{ inputs.cache }}" ]] && echo "--volume=${{ inputs.cache }}:${{ inputs.cache }}" || echo "")
-        echo $(date) >> /tmp/.buildx-cache/file.txt
-        cat /tmp/.buildx-cache/file.txt
         docker build -t docker-build "${{ github.action_path }}"
         docker run -v /var/run/docker.sock:/var/run/docker.sock \
         -e ARTIFACTORY -e SECRETS -e GITHUB_EVENT_NAME -e GITHUB_REF \
