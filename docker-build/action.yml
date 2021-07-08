@@ -18,11 +18,11 @@ runs:
     - name: Load Cache
       id: cache-restore
       run: |
-        cd "${{ github.action_path }}/cache"
-        npm i @actions/cache
-        npm i @actions/core
-        node "restore.js"
         mkdir -p /tmp/.buildx-cache
+        cd "${{ github.action_path }}/cache"
+        npm i --silent @actions/cache
+        npm i --silent @actions/core
+        node restore.js
       shell: bash
     - name: Docker build or Push
       run: |
@@ -40,5 +40,5 @@ runs:
     - name: Load Cache
       id: cache-save
       run: |
-        node "${{ github.action_path }}/cache/save.js"
+        node ${{ github.action_path }}/cache/save.js
       shell: bash

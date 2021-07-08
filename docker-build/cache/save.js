@@ -5,6 +5,8 @@ const KEY = process.env.GITHUB_REPOSITORY;
 
 async function run() {
     try {
+        core.info('Saving cache...');
+
         const state = core.getState('CACHE_RESULT')
 
         if (state && state.localeCompare(KEY, undefined, {sensitivity: 'accent'}) === 0) {
