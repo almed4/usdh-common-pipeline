@@ -20,8 +20,8 @@ runs:
   steps:
     - name: Docker build or Push
       run: |
-        [[ ! -z "${{ inputs.cache }}" ]] && mkdir -p "${{ inputs.cache }}"
-        [[ ! -z "${{ inputs.cache }}" ]] && mnt="--volume=${{ inputs.cache }}:${{ inputs.cache }}"
+        [[ -n "${{ inputs.cache }}" ]] && mkdir -p "${{ inputs.cache }}"
+        mnt=$([[ -n "${{ inputs.cache }}" ]] && echo "--volume=${{ inputs.cache }}:${{ inputs.cache }}" || echo "")
         echo $(date) >> /tmp/.buildx-cache/file.txt
         cat /tmp/.buildx-cache/file.txt
         docker build -t docker-build "${{ github.action_path }}"
