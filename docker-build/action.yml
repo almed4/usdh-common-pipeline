@@ -22,6 +22,7 @@ runs:
       run: |
         [[ -n "${{ inputs.cache }}" ]] && mkdir -p "${{ inputs.cache }}"
         mnt=$([[ -n "${{ inputs.cache }}" ]] && echo "--volume=${{ inputs.cache }}:${{ inputs.cache }}" || echo "")
+        echo "$mnt"
         docker build -t docker-build "${{ github.action_path }}"
         docker run -v /var/run/docker.sock:/var/run/docker.sock \
         -e ARTIFACTORY -e SECRETS -e GITHUB_EVENT_NAME -e GITHUB_REF \
@@ -33,8 +34,3 @@ runs:
         ARTIFACTORY: ${{ inputs.artifactory }}
         SECRETS: ${{ inputs.secrets }}
         CACHE: ${{ inputs.cache }}
-    - name: Load Cache
-      id: cache-save
-      run: |
-        node ${{ github.action_path }}/cache/save.js
-      shell: bash
