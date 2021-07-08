@@ -117,5 +117,8 @@ buildOrPush() {
 #populateEnvironment
 #prepDocker
 #buildOrPush
+echo "Cache:"
+ls "$CACHE"
+cat "$CACHE/test.txt"
 date >> "$CACHE/test.txt"
 cat "$CACHE/test.txt"
