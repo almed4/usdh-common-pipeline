@@ -26,7 +26,7 @@ runs:
         docker run -v /var/run/docker.sock:/var/run/docker.sock \
         -e ARTIFACTORY -e SECRETS -e GITHUB_EVENT_NAME -e GITHUB_REF \
         -e GITHUB_REPOSITORY -e GITHUB_ACTOR -e GITHUB_TOKEN \
-        -e COMMAND "$mnt" \
+        "$mnt" \
         docker-build
       shell: bash
       env:
