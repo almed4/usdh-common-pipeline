@@ -22,12 +22,13 @@ runs:
         npm i @actions/cache
         npm i @actions/core
         node "restore.js"
+        mkdir -p /tmp/.buildx-cache
       shell: bash
     - name: Docker build or Push
       run: |
         docker build -t docker-build "${{ github.action_path }}"
         docker run -v /var/run/docker.sock:/var/run/docker.sock \
-        "-v /tmp/.buildx-cache:/tmp/.buildx-cache \
+        -v /tmp/.buildx-cache:/tmp/.buildx-cache \
         -e ARTIFACTORY -e SECRETS -e GITHUB_EVENT_NAME -e GITHUB_REF \
         -e GITHUB_REPOSITORY -e GITHUB_ACTOR -e GITHUB_TOKEN \
         docker-build
