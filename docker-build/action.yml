@@ -18,27 +18,25 @@ runs:
     - name: Load Cache
       id: cache-load
       run: |
-        mkdir /tmp/.buildx-cache
-        echo "test" >> /tmp/.buildx-cache/test.txt
+        npm i @actions/cache
+        npm i @actions/core
+        node "${{ github.action_path }}/cache/restore.js"
       shell: bash
     - name: Docker build or Push
       run: |
-        ls /tmp/.buildx-cache
-        cat /tmp/.buildx-cache/test.txt
-#        docker build -t docker-build "${{ github.action_path }}"
-#        docker run -v /var/run/docker.sock:/var/run/docker.sock \
-#        "-v /tmp/.buildx-cache:/tmp/.buildx-cache \
-#        -e ARTIFACTORY -e SECRETS -e GITHUB_EVENT_NAME -e GITHUB_REF \
-#        -e GITHUB_REPOSITORY -e GITHUB_ACTOR -e GITHUB_TOKEN \
-#        -e COMMAND \
-#        docker-build
+        docker build -t docker-build "${{ github.action_path }}"
+        docker run -v /var/run/docker.sock:/var/run/docker.sock \
+        "-v /tmp/.buildx-cache:/tmp/.buildx-cache \
+        -e ARTIFACTORY -e SECRETS -e GITHUB_EVENT_NAME -e GITHUB_REF \
+        -e GITHUB_REPOSITORY -e GITHUB_ACTOR -e GITHUB_TOKEN \
+        docker-build
       shell: bash
       env:
         ARTIFACTORY: ${{ inputs.artifactory }}
         SECRETS: ${{ inputs.secrets }}
         GITHUB_TOKEN: ${{ github.token }}
-        COMMAND: ${{ steps.cache-config.outputs.command }}
-    - name: Sent Environment
-      id: set-env
-      run: echo "a"
+    - name: Load Cache
+      id: cache-load
+      run: |
+        node "${{ github.action_path }}/cache/save.js"
       shell: bash
