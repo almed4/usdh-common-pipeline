@@ -18,9 +18,10 @@ runs:
     - name: Load Cache
       id: cache-restore
       run: |
+        cd "${{ github.action_path }}/cache"
         npm i @actions/cache
         npm i @actions/core
-        node "${{ github.action_path }}/cache/restore.js"
+        node "restore.js"
       shell: bash
     - name: Docker build or Push
       run: |
