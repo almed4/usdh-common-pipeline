@@ -97,6 +97,8 @@ buildOrPush() {
     build="build"
   fi
 
+  printf "\n\n\n build: %s \n\n\n" "$build"
+
   docker buildx "$build" \
     "$GIT_PATH" \
     "$ACTION" \
