@@ -55,7 +55,6 @@ populateEnvironment() {
   export ACTION
   export IMAGE
   export GIT_PATH
-  export CACHE_COMMAND
 
   echo "Environment populated!"
   return 0
@@ -91,17 +90,13 @@ buildOrPush() {
   fi
   printLargeDelimiter
 
-  if [ -n "$CACHE" ]; then
-    build="build --cache-from=type=local,src=$CACHE --cache-to=type=local,dest=$CACHE,mode=max"
-  else
-    build="build"
-  fi
-
-  docker buildx "$build" \
+  docker buildx build \
     "$GIT_PATH" \
     "$ACTION" \
     --tag "$IMAGE" \
     --platform linux/amd64 \
+    --cache-from=type=local,src="$CACHE" \
+    --cache-to=type=local,dest="$CACHE",mode=max \
     --build-arg IKEA_ARTIFACTORY_USER_NAME="$IKEA_ARTIFACTORY_USER_NAME" \
     --build-arg IKEA_ARTIFACTORY_PASSWORD="$IKEA_ARTIFACTORY_PASSWORD"
 
@@ -114,7 +109,6 @@ buildOrPush() {
   return 0
 }
 
-echo "$COMMAND"
 validateEnvironment
 populateEnvironment
 prepDocker
