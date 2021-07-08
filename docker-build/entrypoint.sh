@@ -51,6 +51,13 @@ populateEnvironment() {
   echo "IMAGE=$IMAGE"
   GIT_PATH="https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git#${GITHUB_REF#*/}"
   echo "GIT_PATH=$GIT_PATH"
+  CACHE_COMMAND=$([ -n "$CACHE" ] && echo "--cache-from=type=local,src=$CACHE --cache-to=type=local,dest=$CACHE,mode=max" || echo "")
+  echo "CACHE_COMMAND=$CACHE_COMMAND"
+
+  export ACTION
+  export IMAGE
+  export GIT_PATH
+  export CACHE_COMMAND
 
   echo "Environment populated!"
   return 0
@@ -89,10 +96,9 @@ buildOrPush() {
   docker buildx build \
   "$GIT_PATH" \
   "$ACTION" \
-  --platform linux/amd64 \
   --tag "$IMAGE" \
-  --cache-from=type=local,src=/tmp/.buildx-cache \
-  --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max \
+  "$CACHE_COMMAND" \
+  --platform linux/amd64 \
   --build-arg IKEA_ARTIFACTORY_USER_NAME="$IKEA_ARTIFACTORY_USER_NAME" \
   --build-arg IKEA_ARTIFACTORY_PASSWORD="$IKEA_ARTIFACTORY_PASSWORD"
   if [ "$ACTION" = "--push" ]; then

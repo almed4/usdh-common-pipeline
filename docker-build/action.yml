@@ -8,6 +8,9 @@ inputs:
   secrets:
     description: 'Pipeline secrets (Artifactory username/password and GitHub username/token)'
     required: true
+  cache:
+    description: 'To enable caching, pass in cache directory here.'
+    required: false
 outputs:
   environment:
     description: 'Name of which environment(s) to deploy to.'
@@ -15,30 +18,23 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Load Cache
-      id: cache-restore
-      run: |
-        mkdir -p /tmp/.buildx-cache
-        cd "${{ github.action_path }}/cache"
-        sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 zstd
-        npm i --silent
-        node restore.js
-      shell: bash
     - name: Docker build or Push
       run: |
+        [[ ! -z "${{ inputs.cache }}" ]] && mkdir -p "${{ inputs.cache }}"
+        [[ ! -z "${{ inputs.cache }}" ]] && mnt="--volume=${{ inputs.cache }}:${{ inputs.cache }}"
         echo $(date) >> /tmp/.buildx-cache/file.txt
         cat /tmp/.buildx-cache/file.txt
-#        docker build -t docker-build "${{ github.action_path }}"
-#        docker run -v /var/run/docker.sock:/var/run/docker.sock \
-#        -v /tmp/.buildx-cache:/tmp/.buildx-cache \
-#        -e ARTIFACTORY -e SECRETS -e GITHUB_EVENT_NAME -e GITHUB_REF \
-#        -e GITHUB_REPOSITORY -e GITHUB_ACTOR -e GITHUB_TOKEN \
-#        docker-build
+        docker build -t docker-build "${{ github.action_path }}"
+        docker run -v /var/run/docker.sock:/var/run/docker.sock \
+        -e ARTIFACTORY -e SECRETS -e GITHUB_EVENT_NAME -e GITHUB_REF \
+        -e GITHUB_REPOSITORY -e GITHUB_ACTOR -e GITHUB_TOKEN \
+        "$mnt" \
+        docker-build
       shell: bash
       env:
         ARTIFACTORY: ${{ inputs.artifactory }}
         SECRETS: ${{ inputs.secrets }}
-        GITHUB_TOKEN: ${{ github.token }}
+        CACHE: ${{ inputs.cache }}
     - name: Load Cache
       id: cache-save
       run: |
