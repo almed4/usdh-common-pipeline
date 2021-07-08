@@ -43,5 +43,6 @@ runs:
       shell: bash
       env:
         ARTIFACTORY: ${{ inputs.artifactory }}
+        GITHUB_TOKEN: ${{ github.token }}
         SECRETS: ${{ inputs.secrets }}
         CACHE: ${{ inputs.cache }}
