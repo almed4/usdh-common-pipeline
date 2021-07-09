@@ -9,35 +9,6 @@ printStepExecutionDelimiter() {
   printf "\n----------------------------------------\n"
 }
 
-validateProperty() {
-  PROP_KEY=$1
-  PROP_VALUE=$(echo "$SECRETS" | grep "$PROP_KEY" | cut -d'=' -f2)
-  if [ -z "$PROP_VALUE" ]; then
-    echo "Error validating SECRETS: $PROP_VALUE empty."
-    return 1
-  else
-    eval "$PROP_KEY"="$PROP_VALUE"
-    return 0
-  fi
-}
-
-validateEnvironment() {
-  printf "\n\nValidating Secrets."
-  printLargeDelimiter
-
-  echo "Validating IKEA_ARTIFACTORY_USER_NAME"
-  if ! validateProperty "IKEA_ARTIFACTORY_USER_NAME"; then
-    return 1
-  fi
-  echo "Validating IKEA_ARTIFACTORY_PASSWORD"
-  if ! validateProperty "IKEA_ARTIFACTORY_PASSWORD"; then
-    return 1
-  fi
-
-  echo "Secrets validated!"
-  return 0
-}
-
 populateEnvironment() {
   printf "\n\nPopulating environment."
   printLargeDelimiter
@@ -57,6 +28,31 @@ populateEnvironment() {
   export GIT_PATH
 
   echo "Environment populated!"
+  return 0
+}
+
+getSecrets() {
+  printf "\n\nPreparing Secrets."
+  printLargeDelimiter
+
+  IKEA_ARTIFACTORY_USER_NAME=$(vault kv get \
+    -address="https://vault-prod.build.ingka.ikea.com/" \
+    -namespace="ushub" \
+    -field=username \
+    runtime-terrors/artifactory)
+  echo "Artifactory username downloaded!"
+
+  IKEA_ARTIFACTORY_PASSWORD=$(vault kv get \
+    -address="https://vault-prod.build.ingka.ikea.com/" \
+    -namespace="ushub" \
+    -field=password \
+    runtime-terrors/artifactory)
+  echo "Artifactory password downloaded!"
+
+  export IKEA_ARTIFACTORY_USER_NAME
+  export IKEA_ARTIFACTORY_PASSWORD
+
+  echo "Secrets prepared!"
   return 0
 }
 
@@ -113,7 +109,7 @@ buildOrPush() {
   return 0
 }
 
-validateEnvironment
+getSecrets
 populateEnvironment
 prepDocker
 buildOrPush

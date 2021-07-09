@@ -5,8 +5,8 @@ inputs:
     description: 'Location to push the image to in Artifactory'
     required: false
     default: artifactory.build.ingka.ikea.com/ushub-docker-dev-local
-  secrets:
-    description: 'Pipeline secrets (Artifactory username/password and GitHub username/token)'
+  vault:
+    description: 'Token to login to Vault to access secrets.'
     required: true
   cache:
     description: 'To enable caching, pass in cache directory here.'
@@ -33,6 +33,7 @@ runs:
           -e GITHUB_REPOSITORY
           -e GITHUB_ACTOR
           -e GITHUB_TOKEN
+          -e VAULT_TOKEN
           -e CACHE
         )
         if [[ -n "${{ inputs.cache }}" ]]; then
@@ -44,5 +45,5 @@ runs:
       env:
         ARTIFACTORY: ${{ inputs.artifactory }}
         GITHUB_TOKEN: ${{ github.token }}
-        SECRETS: ${{ inputs.secrets }}
+        VAULT_TOKEN: ${{ inputs.vault }}
         CACHE: ${{ inputs.cache }}

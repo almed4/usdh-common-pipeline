@@ -9,42 +9,47 @@ printStepExecutionDelimiter() {
   printf "\n----------------------------------------\n"
 }
 
-validateProperty() {
-  PROP_KEY=$1
-  PROP_VALUE=$(echo "$SECRETS" | grep "$PROP_KEY" | cut -d'=' -f2)
-  if [ -z "$PROP_VALUE" ]; then
-    echo "Error validating SECRETS: $PROP_VALUE empty."
-    return 1
-  else
-    eval export "$PROP_KEY"="$PROP_VALUE"
-    return 0
-  fi
-}
-
-validateEnvironment() {
-  printf "\n\nValidating Secrets."
+getSecrets() {
+  printf "\n\nPreparing Secrets."
   printLargeDelimiter
 
-  echo "Validating GITHUB_ACTOR"
-  if ! validateProperty "GITHUB_ACTOR"; then
-    return 1
-  fi
-  echo "Validating GITHUB_TOKEN"
-  if ! validateProperty "GITHUB_TOKEN"; then
-    return 1
-  fi
-  echo "Validating IKEA_ARTIFACTORY_USER_NAME"
-  if ! validateProperty "IKEA_ARTIFACTORY_USER_NAME"; then
-    return 1
-  fi
-  echo "Validating IKEA_ARTIFACTORY_PASSWORD"
-  if ! validateProperty "IKEA_ARTIFACTORY_PASSWORD"; then
-    return 1
-  fi
+  IKEA_ARTIFACTORY_USER_NAME=$(vault kv get \
+    -address="https://vault-prod.build.ingka.ikea.com/" \
+    -namespace="ushub" \
+    -field=username \
+    runtime-terrors/artifactory)
+  echo "Artifactory username downloaded!"
 
-  echo "Secrets validated!"
+  IKEA_ARTIFACTORY_PASSWORD=$(vault kv get \
+    -address="https://vault-prod.build.ingka.ikea.com/" \
+    -namespace="ushub" \
+    -field=password \
+    runtime-terrors/artifactory)
+  echo "Artifactory password downloaded!"
+
+  GITHUB_ACTOR=$(vault kv get \
+    -address="https://vault-prod.build.ingka.ikea.com/" \
+    -namespace="ushub" \
+    -field=username \
+    runtime-terrors/github)
+  echo "GitHub actor downloaded!"
+
+  GITHUB_TOKEN=$(vault kv get \
+    -address="https://vault-prod.build.ingka.ikea.com/" \
+    -namespace="ushub" \
+    -field=token \
+    runtime-terrors/github)
+  echo "GitHub token downloaded!"
+
+  export IKEA_ARTIFACTORY_USER_NAME
+  export IKEA_ARTIFACTORY_PASSWORD
+  export GITHUB_ACTOR
+  export GITHUB_TOKEN
+
+  echo "Secrets prepared!"
   return 0
 }
+
 
 populateEnvironment() {
   printf "\n\nPopulating environment."
@@ -126,7 +131,7 @@ syncHelmfile() {
   return 0
 }
 
-validateEnvironment
+getSecrets
 populateEnvironment
 prepHelmEnvironment
 addHelmRepo
