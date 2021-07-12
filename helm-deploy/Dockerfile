@@ -1,7 +1,5 @@
 FROM chatwork/helmfile:0.139.9
 
-ENV VAULT_TOKEN=$VAULT_TOKEN
-
 ARG VAULT_VERSION=vault_1.7.3_linux_amd64.zip
 ARG VAULT_URL=https://releases.hashicorp.com/vault/1.7.3/vault_1.7.3_linux_amd64.zip
 ARG VAULT_PATH=/usr/local/bin/vault
