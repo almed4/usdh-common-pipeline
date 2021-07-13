@@ -15,30 +15,30 @@ getSecrets() {
 
   IKEA_ARTIFACTORY_USER_NAME=$(vault kv get \
     -address="https://vault-prod.build.ingka.ikea.com/" \
-    -namespace="ushub" \
+    -namespace="runtime-terrors" \
     -field=username \
-    runtime-terrors/artifactory)
+    kv/artifactory)
   echo "Artifactory username downloaded!"
 
   IKEA_ARTIFACTORY_PASSWORD=$(vault kv get \
     -address="https://vault-prod.build.ingka.ikea.com/" \
-    -namespace="ushub" \
+    -namespace="runtime-terrors" \
     -field=password \
-    runtime-terrors/artifactory)
+    kv/artifactory)
   echo "Artifactory password downloaded!"
 
   GITHUB_ACTOR=$(vault kv get \
     -address="https://vault-prod.build.ingka.ikea.com/" \
-    -namespace="ushub" \
+    -namespace="runtime-terrors" \
     -field=username \
-    runtime-terrors/github)
+    kv/github)
   echo "GitHub actor downloaded!"
 
   GITHUB_TOKEN=$(vault kv get \
     -address="https://vault-prod.build.ingka.ikea.com/" \
-    -namespace="ushub" \
+    -namespace="runtime-terrors" \
     -field=token \
-    runtime-terrors/github)
+    kv/github)
   echo "GitHub token downloaded!"
 
   export IKEA_ARTIFACTORY_USER_NAME
