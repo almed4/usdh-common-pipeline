@@ -7,9 +7,13 @@ inputs:
   kubeconfig:
     description: 'KUBECONFIG for cluster to deploy to'
     required: true
+  environment:
+    description: 'Deployment environment (dev/stage/prod)'
+    required: true
 runs:
   using: 'docker'
   image: 'Dockerfile'
   env:
     VAULT_TOKEN: ${{ inputs.vault }}
     KUBECONFIG: ${{ inputs.kubeconfig }}
+    ENVIRONMENT: ${{ inputs.environment }}

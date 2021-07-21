@@ -61,19 +61,6 @@ populateEnvironment() {
   echo "IMAGE=$IMAGE"
   HELMFILE="https://$GITHUB_ACTOR:$GITHUB_TOKEN@raw.githubusercontent.com/$GITHUB_REPOSITORY/${GITHUB_REF##*/}/helmfile.yaml"
   echo "HELMFILE=***@$(echo "HELMFILE=$HELMFILE" | sed "s/.*@//")"
-  ENVIRONMENT=$(case "$GITHUB_EVENT_ACTION" in
-    "released")
-      echo 'prod'
-      ;;
-    "prereleased")
-      echo 'stage'
-      ;;
-    *)
-      echo 'dev'
-      ;;
-    esac)
-  echo "ENVIRONMENT=$ENVIRONMENT"
-  export ENVIRONMENT
 
   echo "Environment populated!"
   return 0
@@ -131,11 +118,66 @@ syncHelmfile() {
   return 0
 }
 
+getKubeSA() {
+  KUBE_SA=$(kubectl get ikeasink -o=jsonpath='{.items[0].status.create_sink.sa}')
+  BUCKET=$(kubectl get ikeasink -o=jsonpath='{.items[0].spec.bucketname}')
+  GCP_PROJECT=$(kubectl get ikeasink -o=jsonpath='{.items[0].spec.project}')
+
+  GCLOUD_TOKEN=$(vault read \
+    -address="https://vault-prod.build.ingka.ikea.com/" \
+    -namespace="runtime-terrors" \
+    -field=token \
+    gcp/token/"$GCP_PROJECT")
+  GCLOUD_AUTH_HEADER="Authorization: Bearer $GCLOUD_TOKEN"
+
+  export KUBE_SA
+  export BUCKET
+  export GCP_PROJECT
+
+  export GCLOUD_AUTH_HEADER
+
+  echo "Retrieved IkeaSink Service Account!"
+  return 0
+}
+
+makeGcpRequest() {
+  curl -X POST \
+    -H "$GCLOUD_AUTH_HEADER" \
+    -H "Content-Type: application/json" \
+    --data "$2" "https://$1" > tmp.json
+}
+
+createLogBucket() {
+  RETENTION=$( [ "$ENVIRONMENT" = "prod" ] && echo "365" || echo "90")
+  json="{\"name\":\"$BUCKET\",\"description\":\"Logs forwarded from gke-managed cluster\",\"retentionDays\":$RETENTION,\"locked\":false}"
+  makeGcpRequest "logging.googleapis.com/v2/projects/$GCP_PROJECT/locations/global/buckets?bucketId=$BUCKET" "$json"
+  echo "Created log bucket $BUCKET!"
+  return 0
+}
+
+bindRoles() {
+  json="{\"options\":{\"requestedPolicyVersion\":1}}"
+  makeGcpRequest "cloudresourcemanager.googleapis.com/v1/projects/$GCP_PROJECT:getIamPolicy" "$json"
+  sed -i.bak '$d' tmp.json
+  sed -i.bak '$d' tmp.json
+  echo ",{\"role\":\"roles/logging.bucketWriter\",\"members\":[\"serviceAccount:$KUBE_SA\"]}]}" >> tmp.json
+  makeGcpRequest "cloudresourcemanager.googleapis.com/v1/projects/$GCP_PROJECT:setIamPolicy" "{\"policy\":$(cat tmp.json)}"
+  echo "Bound roles!"
+  return 0
+}
+
+# Sync helmfile
 getSecrets
 populateEnvironment
 prepHelmEnvironment
 addHelmRepo
 syncHelmfile
+
+# Setup logging
+set +e
+getKubeSA
+createLogBucket
+bindRoles
 
 printLargeDelimiter
 printf "\n\nApplication Deployed!.\n\n"
