@@ -9,6 +9,9 @@ jobs:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     steps:
+      - name: Get version
+        run: echo "VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV
+
       - name: Check out the repo
         uses: actions/checkout@v2
 
@@ -23,11 +26,11 @@ jobs:
         with:
           context: images/docker-build
           push: true
-          tags: almed4/docker-build:latest,almed4/docker-build:${{github.ref##*/}}
+          tags: almed4/docker-build:latest,almed4/docker-build:${{ env.VERSION }}
 
       - name: Build and push helm-deploy
         uses: docker/build-push-action@v2
         with:
           context: images/helm-deploy
           push: true
-          tags: almed4/helm-deploy:latest,almed4/helm-deploy:${{github.ref##*/}}
+          tags: almed4/helm-deploy:latest,almed4/helm-deploy:${{ env.VERSION }}
