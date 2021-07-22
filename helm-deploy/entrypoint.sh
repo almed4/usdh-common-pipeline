@@ -141,17 +141,25 @@ getKubeSA() {
 }
 
 makeGcpRequest() {
-  curl -X POST \
+  curl -X POST -L -s "https://$1" \
     -H "$GCLOUD_AUTH_HEADER" \
     -H "Content-Type: application/json" \
-    --data "$2" "https://$1" > tmp.json
+    --data-raw "$2" \
+    2>/dev/null > tmp.json
+
+  if grep error < tmp.json 1>/dev/null; then
+    echo "Error sending API request to $GCP_PROJECT:"
+    echo "    \"uri\": \"https://$1\""
+    echo "    \"body\": \"$2\""
+    grep message < tmp.json
+  fi
 }
 
 createLogBucket() {
   RETENTION=$( [ "$ENVIRONMENT" = "prod" ] && echo "365" || echo "90")
   json="{\"name\":\"$BUCKET\",\"description\":\"Logs forwarded from gke-managed cluster\",\"retentionDays\":$RETENTION,\"locked\":false}"
   makeGcpRequest "logging.googleapis.com/v2/projects/$GCP_PROJECT/locations/global/buckets?bucketId=$BUCKET" "$json"
-  echo "Created log bucket $BUCKET!"
+  echo "Created log bucket $BUCKET in $GCP_PROJECT!"
   return 0
 }
 
@@ -162,7 +170,7 @@ bindRoles() {
   sed -i.bak '$d' tmp.json
   echo ",{\"role\":\"roles/logging.bucketWriter\",\"members\":[\"serviceAccount:$KUBE_SA\"]}]}" >> tmp.json
   makeGcpRequest "cloudresourcemanager.googleapis.com/v1/projects/$GCP_PROJECT:setIamPolicy" "{\"policy\":$(cat tmp.json)}"
-  echo "Bound roles!"
+  echo "Bound roles between IkeaSink in MGKE $ENVIRONMENT and $GCP_PROJECT!"
   return 0
 }
 
