@@ -23,11 +23,11 @@ jobs:
         with:
           context: images/docker-build
           push: true
-          tags: almed4/docker-build:latest,almed4/docker-build:${GITHUB_REF##*/}
+          tags: almed4/docker-build:latest,almed4/docker-build:${{github.ref##*/}}
 
       - name: Build and push helm-deploy
         uses: docker/build-push-action@v2
         with:
           context: images/helm-deploy
           push: true
-          tags: almed4/helm-deploy:latest,almed4/helm-deploy:${GITHUB_REF##*/}
+          tags: almed4/helm-deploy:latest,almed4/helm-deploy:${{github.ref##*/}}
