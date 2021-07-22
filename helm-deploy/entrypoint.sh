@@ -156,6 +156,9 @@ makeGcpRequest() {
 }
 
 createLogBucket() {
+  printf "\n\nCreating Log Bucket."
+  printLargeDelimiter
+
   RETENTION=$( [ "$ENVIRONMENT" = "prod" ] && echo "365" || echo "90")
   json="{\"name\":\"$BUCKET\",\"description\":\"Logs forwarded from gke-managed cluster\",\"retentionDays\":$RETENTION,\"locked\":false}"
   makeGcpRequest "logging.googleapis.com/v2/projects/$GCP_PROJECT/locations/global/buckets?bucketId=$BUCKET" "$json"
@@ -164,6 +167,9 @@ createLogBucket() {
 }
 
 bindRoles() {
+  printf "\n\nBinding IkeaSink service account."
+  printLargeDelimiter
+
   json="{\"options\":{\"requestedPolicyVersion\":1}}"
   makeGcpRequest "cloudresourcemanager.googleapis.com/v1/projects/$GCP_PROJECT:getIamPolicy" "$json"
   sed -i.bak '$d' tmp.json
