@@ -1,4 +1,4 @@
-FROM almed4/helm-deploy:0.0.1
+FROM almed4/helm-deploy:1.0.0
 
 COPY entrypoint.sh /entrypoint.sh
 

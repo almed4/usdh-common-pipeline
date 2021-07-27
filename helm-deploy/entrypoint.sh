@@ -88,26 +88,6 @@ prepHelmEnvironment() {
   return 0
 }
 
-# This step must be completed because Helmfile doesn't have support for
-# --pass-credentials, which is necessary to pull from our repo (and Helm-Git
-# doesn't work with versioned charts)
-#
-# Hopefully fixed by: https://github.com/roboll/helmfile/issues/1898
-addHelmRepo() {
-  printf "\n\nAdding Helm repository."
-  printLargeDelimiter
-
-  helm repo add \
-    --username "$GITHUB_ACTOR" \
-    --password "$GITHUB_TOKEN" \
-    --pass-credentials \
-    usdh-common-helm \
-    https://raw.githubusercontent.com/ingka-group-digital/usdh-common-helm/prod/repo
-
-  echo "Helm repo added!"
-  return 0
-}
-
 syncHelmfile() {
   printf "\n\nSyncing Helmfile."
   printLargeDelimiter
