@@ -164,7 +164,6 @@ bindRoles() {
 getSecrets
 populateEnvironment
 prepHelmEnvironment
-addHelmRepo
 syncHelmfile
 
 # Setup logging
