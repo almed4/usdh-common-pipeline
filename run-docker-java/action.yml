@@ -1,0 +1,50 @@
+name: Run Java with Docker
+description: Run a JVM command in an environment configured for docker-java.
+
+inputs:
+  lfs:
+    description: 'Whether to download Git-LFS files'
+    required: false
+    default: 'false'
+  java-version:
+    description: 'Java version to use'
+    required: false
+    default: '11'
+  cache:
+    description: 'Name of the build platform to cache dependencies. It can be "maven" or "gradle".'
+    required: false
+  docker-registry:
+    description: 'Server address of Docker registry. If not set then will default to Docker Hub'
+    required: false
+  docker-username:
+    description: 'Username used to log against the Docker registry'
+    required: false
+  docker-password:
+    description: 'Password or personal access token used to log against the Docker registry'
+    required: false
+  run-command:
+    description: 'Shell command to run your JVM process'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/cache@v2
+      with:
+        path: /var/lib/docker/graph
+        key: ${{ github.repository }}-docker-cache
+    - uses: actions/checkout@v2
+      with:
+        lfs: ${{inputs.lfs}}
+    - uses: actions/setup-java@v2
+      with:
+        distribution: 'zulu'
+        java-version: ${{inputs.java-version}}
+        cache: ${{inputs.cache}}
+    - uses: docker/login-action@v1
+      with:
+        registry: ${{inputs.docker-registry}}
+        username: ${{inputs.docker-username}}
+        password: ${{inputs.docker-password}}
+    - run: ${{inputs.run-command}}
+      shell: bash
