@@ -18,6 +18,7 @@ runs:
     - uses: almed4/usdh-common-pipeline/docker-build@v3
       with:
         push: ${{{ { [ "$GITHUB_EVENT_NAME" = "push" ] && [ "$GITHUB_REF" = "refs/heads/develop" ]; } || [ "$GITHUB_EVENT_NAME" = "release" ]; } && echo "true" || echo "false"}}
+        tag: docker-dev-local/${GITHUB_REPOSITORY##*/}:${{[ "$GITHUB_EVENT_NAME" = "release" ] && echo "${GITHUB_REF##*/}" || echo "latest"}}
         registry: artifactory.build.ingka.ikea.com
         username: ${{ env.IKEA_ARTIFACTORY_USER_NAME }}
         password: ${{ env.IKEA_ARTIFACTORY_PASSWORD }}

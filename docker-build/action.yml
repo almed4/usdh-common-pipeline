@@ -6,8 +6,7 @@ inputs:
     default: 'false'
     required: false
   tag:
-    description: 'Tag name. Defaults to to repository-name:latest for branch runs or repository-name:{tag} for tagged runs.'
-    default: '${GITHUB_REPOSITORY##*/}:${{[ "$GITHUB_EVENT_NAME" = "release" ] && echo "${GITHUB_REF##*/}" || echo "latest"}}'
+    description: 'Docker image tag.'
     required: false
   registry:
     description: 'Server address of Docker registry. If not set then will default to Docker Hub'
