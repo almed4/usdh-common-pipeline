@@ -1,49 +1,34 @@
 name: 'Docker Build or Push'
-description: 'Build docker image and push to Artifactory in case of push or release.'
+description: 'Build docker image and push to registry in case of push or release.'
 inputs:
-  artifactory:
-    description: 'Location to push the image to in Artifactory'
+  push:
+    description: 'Weather or not to push built image to registry.'
+    default: 'false'
     required: false
-    default: artifactory.build.ingka.ikea.com/ushub-docker-dev-local
-  vault:
-    description: 'Token to login to Vault to access secrets.'
-    required: true
-  cache:
-    description: 'To enable caching, pass in cache directory here.'
+  tag:
+    description: 'Tag name. Defaults to to repository-name:latest for branch runs or repository-name:{tag} for tagged runs.'
+    default: '${GITHUB_REPOSITORY##*/}:${{[ "$GITHUB_EVENT_NAME" = "release" ] && echo "${GITHUB_REF##*/}" || echo "latest"}}'
     required: false
-outputs:
-  environment:
-    description: 'Name of which environment(s) to deploy to.'
-    value: ${{ steps.set-env.outputs.environment }}
+  registry:
+    description: 'Server address of Docker registry. If not set then will default to Docker Hub'
+    required: false
+  username:
+    description: 'Username used to log against the Docker registry'
+    required: false
+  password:
+    description: 'Password or personal access token used to log against the Docker registry'
+    required: false
+
 runs:
-  using: 'composite'
+  using: composite
   steps:
-    - name: Docker build or Push
-      run: |
-        [[ -n "${{ inputs.cache }}" ]] && mkdir -p "${{ inputs.cache }}"
-
-        docker build -t docker-build "${{ github.action_path }}"
-
-        args=(
-          -v /var/run/docker.sock:/var/run/docker.sock
-          -e ARTIFACTORY
-          -e SECRETS
-          -e GITHUB_EVENT_NAME
-          -e GITHUB_REF
-          -e GITHUB_REPOSITORY
-          -e GITHUB_ACTOR
-          -e GITHUB_TOKEN
-          -e VAULT_TOKEN
-          -e CACHE
-        )
-        if [[ -n "${{ inputs.cache }}" ]]; then
-          args+=(-v "${{ inputs.cache }}:${{ inputs.cache }}")
-        fi
-
-        docker run "${args[@]}" docker-build
-      shell: bash
-      env:
-        ARTIFACTORY: ${{ inputs.artifactory }}
-        GITHUB_TOKEN: ${{ github.token }}
-        VAULT_TOKEN: ${{ inputs.vault }}
-        CACHE: ${{ inputs.cache }}
+    - uses: actions/checkout@v2
+    - uses: docker/login-action@v1
+      with:
+        registry: ${{inputs.registry}}
+        username: ${{inputs.username}}
+        password: ${{inputs.password}}
+    - uses: docker/build-push-action@v2
+      with:
+        push: ${{inputs.push}}
+        tags: ${{inputs.tag}}

@@ -1,0 +1,24 @@
+name: 'Runtime Terrors Build or Push'
+description: 'Build docker image and push to Artifactory for deployment.'
+inputs:
+  vault-token:
+    description: 'Vault token to retrieve Artifactory credentials from Runtime Terrors vault'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: hashicorp/vault-action@v2.3.1
+      with:
+        url: https://vault-prod.build.ingka.ikea.com/
+        token: ${{ secrets.VAULT_TOKEN }}
+        secrets: |
+          runtime-terrors/kv/artifactory username | IKEA_ARTIFACTORY_USER_NAME ;
+          runtime-terrors/kv/artifactory password | IKEA_ARTIFACTORY_PASSWORD
+    - uses: almed4/usdh-common-pipeline/docker-build@v3
+      with:
+        push: ${{{ { [ "$GITHUB_EVENT_NAME" = "push" ] && [ "$GITHUB_REF" = "refs/heads/develop" ]; } || [ "$GITHUB_EVENT_NAME" = "release" ]; } && echo "true" || echo "false"}}
+        registry: artifactory.build.ingka.ikea.com
+        username: ${{ env.IKEA_ARTIFACTORY_USER_NAME }}
+        password: ${{ env.IKEA_ARTIFACTORY_PASSWORD }}
+
